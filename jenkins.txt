@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    environment {
+        dotnet = 'C:\\Program Files\\dotnet\\dotnet.exe'
+    }
+    stages {
+        stage('Checkout Stage only') {
+            steps {
+                git credentialsId: '3aff180a-c94e-44f1-b599-efa5b76c5351', url: 'https://github.com/ananddonepudi/JenkinsWebApplicationDemo.git', branch: 'main'
+            }
+        }
+        stage('Restore packages'){
+         steps{
+                bat "dotnet restore  C:\\Projects\\Jenkinswebapp\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo.csproj"
+              }
+        }
+         stage('Clean'){
+         steps{
+                bat "dotnet clean  C:\\Projects\\Jenkinswebapp\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo.csproj"
+              }
+        }
+        stage('Build Stage') {
+            steps {
+                bat "dotnet build C:\\Projects\\Jenkinswebapp\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo.csproj --configuration Release"
+              // bat 'C:\\Projects\\Jenkinswebapp\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo.sln --configuration Release'
+            }
+        }
+        stage('Test Stage') {
+            steps {
+              // echo "test"
+               bat 'dotnet test %WORKSPACE%\\TestProject1\\TestProject1.csproj'
+            }
+        }
+        stage("Release Stage") {
+            steps {
+                  bat "dotnet publish C:\\Projects\\Jenkinswebapp\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo\\JenkinsWebApplicationDemo.csproj"
+            }
+        }
+        stage('Deploy Stage') {
+            steps {
+               echo "Deploy"
+            }
+        }
+    }
+}
